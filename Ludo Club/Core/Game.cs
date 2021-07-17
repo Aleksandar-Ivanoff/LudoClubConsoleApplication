@@ -1,23 +1,21 @@
-﻿using Ludo_Club.GameServices;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Ludo_Club
+﻿namespace Ludo_Club
 {
+    using Ludo_Club.GameValidationMethods;
+    using Ludo_Club.Models;
+    using System;
+    
+
     public class Game
     {
-        private void StartScreen()
+        
+        private void StartScreen(GameService service,Path path)
         {
             Console.WriteLine("\n#### Welcome to Ludo Club ###\n");//First Screen
 
             Console.Write("\nEnter the number of players: ");
             int playerCount = 0;
 
-            while (!int.TryParse(Console.ReadLine(), out playerCount) || !(playerCount >= 2 && playerCount <= 4))
-            {
-                Console.Write("Enter the number of players: ");
-            }
+            playerCount=GameValidator.ValidateNumberOfPlayers();
 
             Player[] players = new Player[playerCount];
             GameService.PickPlayers(playerCount, players);
@@ -27,15 +25,15 @@ namespace Ludo_Club
             GameService.PickColor(playerCount, players);
             Console.Clear();
 
-            
-
             Token token = new Token();
-            token.MoveTokens(players);
+
+            
+            service.MoveTokens(players,token,path);
         }
         
-        public void StartGame()
+        public void StartGame(GameService service,Path path)
         {
-            StartScreen();
+            StartScreen(service,path);
             
         }
     }

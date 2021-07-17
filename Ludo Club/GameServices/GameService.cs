@@ -6,16 +6,12 @@ namespace Ludo_Club
     using System.Linq;
     using static System.Enum;
     using Enums;
-    using Ludo_Club.GameServices;
     using Ludo_Club.Models;
     using Ludo_Club.Rankings;
-    
     using Ludo_Club.GameValidationMethods;
-    
     using System.Text;
 
-
-    public static class GameService
+    public  class GameService
     {
         /// <summary>
         /// This function let you to pick a color.
@@ -23,9 +19,11 @@ namespace Ludo_Club
         /// <param name="players"></param>
         /// 
 
+
       
         public static void PickColor(int p, Player[] players)
         {
+            
             while (true)
             {
                 if (p >= 2 && p <= 4)
@@ -36,28 +34,23 @@ namespace Ludo_Club
                         string color;
                         Color enumType;
 
-                       
-                            Console.Write($"Player {i + 1} color: ");
-                            Console.WriteLine("\n Blue,\n Red,\n Green,\n Yellow");
-                            Console.WriteLine();
-                            Console.Write("Enter a color: ");
+                        Console.Write($"Player {i + 1} color: ");
+                        Console.WriteLine("\n Blue,\n Red,\n Green,\n Yellow");
+                        Console.WriteLine();
+                        Console.Write("Enter a color: ");
 
-                             color = Console.ReadLine();
-                            
-                            while (color == "" || int.TryParse(color,out _ ))  //discarding out parameter
-                            {
-                                Console.Write(" Error! Enter a color again: ");
-                                color = Console.ReadLine();
-                            }
+                        color = Console.ReadLine();
 
-                           
-                        while (!Enum.TryParse(color, true, out enumType))
+                        string validatedColor=GameValidator.ValidateColor(color);
+
+
+                        while (!Enum.TryParse(validatedColor, true, out enumType))
                         {
-                            if (!(color.ToLower() == "blue" || color.ToLower() == "red" || color.ToLower() == "green" || color.ToLower() == "yellow")) // red is not available
+                            if (!(validatedColor.ToLower() == "blue" || validatedColor.ToLower() == "red" || validatedColor.ToLower() == "green" || validatedColor.ToLower() == "yellow")) // red is not available
                             {
                                 Console.WriteLine("Wrong color! Pick again");
                                 Console.Write("Enter a color: ");
-                                color = new string(Console.ReadLine());
+                                validatedColor = new string(Console.ReadLine());
                             }
                             else
                             {
@@ -73,12 +66,12 @@ namespace Ludo_Club
                                 {
                                     Console.WriteLine("This color is not availabel");
                                     Console.Write("Enter a color: ");
-                                    color = Console.ReadLine();
-                                    while (Enum.TryParse(color, true, out enumType) == false)
+                                    validatedColor = Console.ReadLine();
+                                    while (Enum.TryParse(validatedColor, true, out enumType) == false)
                                     {
                                         Console.WriteLine("Wrong color! Pick again");
                                         Console.Write("Enter a color: ");
-                                        color = Console.ReadLine();
+                                        validatedColor = Console.ReadLine();
                                     }
                                 }
                                 else
@@ -94,12 +87,12 @@ namespace Ludo_Club
                                 {
                                     Console.WriteLine("This color is not availabel");
                                     Console.Write("Enter a color: ");
-                                    color = Console.ReadLine();
-                                    while (Enum.TryParse(color, true, out enumType) == false)
+                                    validatedColor = Console.ReadLine();
+                                    while (Enum.TryParse(validatedColor, true, out enumType) == false)
                                     {
                                         Console.WriteLine("Wrong color! Pick again");
                                         Console.Write("Enter a color: ");
-                                        color = Console.ReadLine();
+                                        validatedColor = Console.ReadLine();
                                     }
                                 }
                                 else
@@ -114,12 +107,12 @@ namespace Ludo_Club
                                 {
                                     Console.WriteLine("This color is not availabel");
                                     Console.Write("Enter a color: ");
-                                    color = Console.ReadLine();
-                                    while (Enum.TryParse(color, true, out enumType) == false)
+                                    validatedColor = Console.ReadLine();
+                                    while (Enum.TryParse(validatedColor, true, out enumType) == false)
                                     {
                                         Console.WriteLine("Wrong color! Pick again");
                                         Console.Write("Enter a color: ");
-                                        color = Console.ReadLine();
+                                        validatedColor = Console.ReadLine();
                                     }
                                 }
                                 else
@@ -134,12 +127,12 @@ namespace Ludo_Club
                                 {
                                     Console.WriteLine("This color is not availabel");
                                     Console.Write("Enter a color: ");
-                                    color = Console.ReadLine();
-                                    while (Enum.TryParse(color, true, out enumType) == false)
+                                    validatedColor = Console.ReadLine();
+                                    while (Enum.TryParse(validatedColor, true, out enumType) == false)
                                     {
                                         Console.WriteLine("Wrong color! Pick again");
                                         Console.Write("Enter a color: ");
-                                        color = Console.ReadLine();
+                                        validatedColor = Console.ReadLine();
                                     }
                                 }
                                 else
@@ -460,13 +453,14 @@ namespace Ludo_Club
             chooseToken = 0;
             if (roll == 6)
             {
+                ShowPlayerTokens(player);
                 if (path.bluePlayerPath[0] == null)
                 {
                     path.bluePlayerPath[0] = new Square();
                 }
                 //SHOW PLAYER TOKENS!!!!!! TO DOO
 
-                
+                Console.Write($"{player.Name} - Pick a Token : ");
                 chooseToken = int.Parse(Console.ReadLine());
                 while (chooseToken > 4)
                 {
@@ -483,11 +477,13 @@ namespace Ludo_Club
                 
                 while (true)
                 {
+                    ShowPlayerTokens(player);
                     Console.Write("Pick a Token : ");
                     chooseToken = int.Parse(Console.ReadLine());
 
                     if ((chooseToken >= 1 && chooseToken <= 4))
                     {
+                        token = player.PlayerTokens.Where(t => t.UniqueIdentifier == chooseToken).FirstOrDefault();
 
                         if (token.Status != Status.InGame)
                         {
@@ -495,7 +491,7 @@ namespace Ludo_Club
                             continue;
                         }
                         
-                        token = player.PlayerTokens.Where(t => t.UniqueIdentifier == chooseToken).FirstOrDefault();
+                        
                         break;
                     }
 
@@ -531,13 +527,16 @@ namespace Ludo_Club
             chooseToken = 0;
             if (roll == 6)
             {
+                ShowPlayerTokens(player);
                 if (path.redPlayerPath[0] == null)
                 {
                     path.redPlayerPath[0] = new Square();
                 }
                 //SHOW PLAYER TOKENS!!!!!! TO DOO
 
-                Console.Write("Pick a token:");
+                
+
+                Console.Write($"{player.Name} - Pick a Token : ");
                 chooseToken = int.Parse(Console.ReadLine());
                 while (chooseToken > 4)
                 {
@@ -554,6 +553,7 @@ namespace Ludo_Club
 
                 while (true)
                 {
+                    ShowPlayerTokens(player);
                     Console.Write("Pick a Token : ");
                     chooseToken = int.Parse(Console.ReadLine());
 
@@ -566,7 +566,7 @@ namespace Ludo_Club
                             continue;
                         }
 
-                        token = player.PlayerTokens.Where(t => t.UniqueIdentifier == chooseToken).FirstOrDefault();
+                        
                         break;
                     }
 
@@ -602,13 +602,14 @@ namespace Ludo_Club
             chooseToken = 0;
             if (roll == 6)
             {
+                ShowPlayerTokens(player);
                 if (path.greenPlayerPath[0] == null)
                 {
                     path.greenPlayerPath[0] = new Square();
                 }
                 //SHOW PLAYER TOKENS!!!!!! TO DOO
 
-
+                Console.Write($"{player.Name} - Pick a Token : ");
                 chooseToken = int.Parse(Console.ReadLine());
                 while (chooseToken > 4)
                 {
@@ -626,19 +627,20 @@ namespace Ludo_Club
 
                 while (true)
                 {
+                    ShowPlayerTokens(player);
                     Console.Write("Pick a Token : ");
                     chooseToken = int.Parse(Console.ReadLine());
 
                     if ((chooseToken >= 1 && chooseToken <= 4))
                     {
-
+                        token = player.PlayerTokens.Where(t => t.UniqueIdentifier == chooseToken).FirstOrDefault();
                         if (token.Status != Status.InGame)
                         {
                             Console.WriteLine("The token you choosed is not InGame!!!!");
                             continue;
                         }
 
-                        token = player.PlayerTokens.Where(t => t.UniqueIdentifier == chooseToken).FirstOrDefault();
+                       
                         break;
                     }
 
@@ -668,19 +670,20 @@ namespace Ludo_Club
             }
 
         }
-
         public static void MoveYellowToken(int roll, Path path, Token token, int chooseToken, Player player, ICollection<Token> tokenFinished)
         {
             chooseToken = 0;
             if (roll == 6)
             {
+                ShowPlayerTokens(player);
+
                 if (path.yellowPlayerPath[0] == null)
                 {
                     path.yellowPlayerPath[0] = new Square();
                 }
                 //SHOW PLAYER TOKENS!!!!!! TO DOO
 
-
+                Console.Write($"\n{player.Name} - Pick a Token : ");
                 chooseToken = int.Parse(Console.ReadLine());
                 while (chooseToken > 4)
                 {
@@ -697,6 +700,9 @@ namespace Ludo_Club
 
                 while (true)
                 {
+
+                    ShowPlayerTokens(player);
+                    
                     Console.Write("Pick a Token : ");
                     chooseToken = int.Parse(Console.ReadLine());
 
@@ -710,7 +716,7 @@ namespace Ludo_Club
                             continue;
                         }
 
-                        token = player.PlayerTokens.Where(t => t.UniqueIdentifier == chooseToken).FirstOrDefault();
+                       
                         break;
                     }
 
@@ -740,5 +746,107 @@ namespace Ludo_Club
             }
 
         }
+
+        public void MoveTokens(Player[] players,Token token,Path path)
+        {
+            int roll = 0;
+            int chooseToken = 0;
+
+            Console.WriteLine("\n#### Welcome to Ludo Club ####\n");
+            while (true)
+            {
+                if (Ranking.readOnlyPlayersRanks.Count == players.Length)
+                {
+                    break;
+                }
+                for (int i = 0; i < players.Length; i++)
+                {
+                    if (token.blueFinished.Count == 4)
+                    {
+                        continue;
+                    }
+                    else if (token.redFinished.Count == 4)
+                    {
+                        continue;
+                    }
+                    else if (token.greenFinished.Count == 4)
+                    {
+                        continue;
+                    }
+                    else if (token.yellowFinished.Count == 4)
+                    {
+                        continue;
+                    }
+
+                    roll = Dice.Roll();
+
+                    Console.WriteLine($"Player{i + 1} rolled : {roll}");
+
+                    if (players[i].Color == Color.Blue)
+                    {
+                        Console.Write($"Player {players[i].Name}, picks a token : "); //TO CHECK
+                        GameService.MoveBlueToken(roll, path, token, chooseToken, players[i], token.blueFinished);
+
+                    }
+
+                    else if (players[i].Color == Color.Red)
+                    {
+                        GameService.MoveRedToken(roll, path, token, chooseToken, players[i], token.redFinished);
+                    }
+
+                    else if (players[i].Color == Color.Green)
+                    {
+                        GameService.MoveBlueToken(roll, path, token, chooseToken, players[i], token.greenFinished);
+                    }
+
+                    else if (players[i].Color == Color.Yellow)
+                    {
+                        GameService.MoveYellowToken(roll, path, token, chooseToken, players[i], token.yellowFinished);
+                    }
+                }
+            }
+            Console.Clear();
+
+            Console.WriteLine("\n#### Welcome to Ludo Club ####\n");
+            Console.WriteLine("\n#### Ranks ####\n");
+            foreach (var t in Ranking.readOnlyPlayersRanks)
+            {
+                if (Ranking.CheckTokenPlace(1, t))
+                {
+                    Console.WriteLine($"1.{t.Name}");
+                }
+                else if (Ranking.CheckTokenPlace(2, t))
+                {
+                    Console.WriteLine($"2.{t.Name}");
+                }
+                else if (Ranking.CheckTokenPlace(3, t))
+                {
+                    Console.WriteLine($"3.{t.Name}");
+                }
+                else if (Ranking.CheckTokenPlace(4, t))
+                {
+                    Console.WriteLine($"4.{t.Name}");
+                }
+
+            }
+        }
+
+
+        private static void ShowPlayerTokens(Player player)
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine();
+            sb.AppendLine($"{player.Name} tokens:");
+            foreach (var token in player.PlayerTokens)
+            {
+
+                sb.AppendLine($"Token({token.UniqueIdentifier}) - {token.Status} status");
+                
+            }
+
+            Console.WriteLine(sb.ToString());
+        }
     }
+
 }
